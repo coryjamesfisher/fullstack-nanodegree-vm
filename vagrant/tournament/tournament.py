@@ -4,6 +4,7 @@
 #
 
 import psycopg2
+import sys
 
 
 def connect():
@@ -13,14 +14,40 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
+    conn = connect();
+    cur = conn.cursor();
+    try:
+        cur.execute("""DELETE FROM match""")
+	conn.commit()
+    except:
+        print "Failed to delete matches"
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
+    conn = connect();
+    cur = conn.cursor();
+    try:
+        cur.execute("""DELETE FROM player""")
+	conn.commit()
+    except:
+        print "Failed to delete players"
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
+    conn = connect()
+    cur = conn.cursor()
+    countRecords = 0
+
+    try:
+        cur.execute("""SELECT COUNT(*) FROM player""")
+        countRecords = cur.fetchone()[0]
+    except:
+        print "Failed to count players"
+        return
+
+    return countRecords 
 
 
 def registerPlayer(name):
@@ -32,7 +59,16 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
+    conn = connect()
+    cur = conn.cursor()
 
+    try:
+        cur.execute("""INSERT INTO player (name) VALUES (%s)""", (name,))
+	conn.commit()
+    except:
+	print sys.exc_info()[0]
+        print "Failed to register player"
+	raise
 
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
