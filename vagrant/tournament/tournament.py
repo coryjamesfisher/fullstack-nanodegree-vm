@@ -66,7 +66,6 @@ def registerPlayer(name):
         cur.execute("""INSERT INTO player (name) VALUES (%s)""", (name,))
 	conn.commit()
     except:
-	print sys.exc_info()[0]
         print "Failed to register player"
 	raise
 
@@ -83,7 +82,16 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+    conn = connect()
+    cur = conn.cursor()
+    countRecords = 0
 
+    try:
+        cur.execute("""SELECT player.id, player.name, count(wins) as wins, count(matches) as matches FROM player LEFT JOIN match wins on wins.winningPlayerId = player.id LEFT JOIN match matches on matches.playerOneId = player.id OR matches.playerTwoId = player.id GROUP BY player.id ORDER BY wins DESC""")
+        return cur.fetchall()
+    except:
+        print "Failed to count players"
+	raise
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -92,7 +100,16 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
- 
+    conn = connect()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""INSERT INTO match (playerOneId, playerTwoId, winningPlayerId, match_state) VALUES (%s, %s, %s, 3)""", (winner, loser, winner,))
+	conn.commit()
+    except:
+        print "Failed to register player"
+	raise
+
  
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
@@ -109,5 +126,14 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    standings = playerStandings()
+    matches = list()
+    countMatches = len(standings)/2
 
+    for i in xrange(0, countMatches + 1, 2):
+	print i
+        j = i + 1
+        match = (standings[i][0], standings[i][1], standings[j][0], standings[j][1])
+        matches.append(match)
 
+    return matches
