@@ -131,7 +131,6 @@ def swissPairings():
     countMatches = len(standings)/2
 
     for i in xrange(0, countMatches + 1, 2):
-	print i
         j = i + 1
         match = (standings[i][0], standings[i][1], standings[j][0], standings[j][1])
         matches.append(match)
