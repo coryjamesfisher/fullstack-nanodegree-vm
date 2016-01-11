@@ -124,75 +124,6 @@ def testPairings():
             "After one match, players with one win should be paired.")
     print "8. After one match, players with one win are paired."
 
-def testNoRematches():
-    deleteMatches()
-    deletePlayers()
-    registerPlayer("Twilight Sparkle")
-    registerPlayer("Fluttershy")
-    registerPlayer("Applejack")
-    registerPlayer("Pinkie Pie")
-
-    # Create a list of 4 lists (one for each player)
-    allMatches = {}
-
-    """ Four rounds """
-    for i in range(0, 3):
-        standings = playerStandings()
-        [id1, id2, id3, id4] = [row[0] for row in standings]
-        reportMatch(id1, id2)
-        reportMatch(id3, id4)
-
-        if id1 not in allMatches:
-            allMatches[id1] = {}
-        
-        if id2 not in allMatches[id1]:
-            allMatches[id1][id2] = 0
-
-        if id2 not in allMatches:
-            allMatches[id2] = {}
-
-        if id1 not in allMatches[id2]:
-            allMatches[id2][id1] = 0
-
-	allMatches[id1][id2] += 1
-        allMatches[id2][id1] += 1
-
-        if id3 not in allMatches:
-            allMatches[id3] = {}
-        
-        if id4 not in allMatches[id3]:
-            allMatches[id3][id4] = 0
-
-        if id4 not in allMatches:
-            allMatches[id4] = {}
-        
-        if id3 not in allMatches[id4]:
-            allMatches[id4][id3] = 0
-
-	allMatches[id3][id4] += 1
-        allMatches[id4][id3] += 1
-        
-        pairings = swissPairings()
-        if len(pairings) != 2:
-            raise ValueError(
-                "For four players, swissPairings should return two pairs.")
-        [(pid1, pname1, pid2, pname2), (pid3, pname3, pid4, pname4)] = pairings
-        correct_pairs = set([frozenset([id1, id3]), frozenset([id2, id4])])
-        actual_pairs = set([frozenset([pid1, pid2]), frozenset([pid3, pid4])])
-        if correct_pairs != actual_pairs:
-            raise ValueError(
-                "After one match, players with one win should be paired.")
-
-    
-    for player1 in allMatches:
-        for player2 in allMatches[player1]:
-            if allMatches[player1][player2] > 1:
-                raise ValueError(
-                    "System was supposed to prevent rematches, but didn't")
-
-    print "9. System prevents rematches"
-
-
 if __name__ == '__main__':
     testDeleteMatches()
     testDelete()
@@ -202,7 +133,5 @@ if __name__ == '__main__':
     testStandingsBeforeMatches()
     testReportMatches()
     testPairings()
-    testNoRematches()
     print "Success!  All tests pass!"
-
 

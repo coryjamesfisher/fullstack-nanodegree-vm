@@ -33,7 +33,6 @@ INSERT INTO
 	(2, 'In Progress'),
 	(3, 'Finished');
 
-
 -- CREATE MATCH STRUCTURE
 CREATE TABLE match
 (

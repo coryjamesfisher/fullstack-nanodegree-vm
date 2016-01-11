@@ -18,7 +18,7 @@ def deleteMatches():
     cur = conn.cursor();
     try:
         cur.execute("""DELETE FROM match""")
-	conn.commit()
+        conn.commit()
     except:
         print "Failed to delete matches"
 
@@ -29,7 +29,7 @@ def deletePlayers():
     cur = conn.cursor();
     try:
         cur.execute("""DELETE FROM player""")
-	conn.commit()
+        conn.commit()
     except:
         print "Failed to delete players"
 
@@ -47,7 +47,7 @@ def countPlayers():
         print "Failed to count players"
         return
 
-    return countRecords 
+    return countRecords
 
 
 def registerPlayer(name):
@@ -64,10 +64,10 @@ def registerPlayer(name):
 
     try:
         cur.execute("""INSERT INTO player (name) VALUES (%s)""", (name,))
-	conn.commit()
+        conn.commit()
     except:
         print "Failed to register player"
-	raise
+        raise
 
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
@@ -87,11 +87,12 @@ def playerStandings():
     countRecords = 0
 
     try:
-        cur.execute("""SELECT player.id, player.name, count(wins) as wins, count(matches) as matches FROM player LEFT JOIN match wins on wins.winningPlayerId = player.id LEFT JOIN match matches on matches.playerOneId = player.id OR matches.playerTwoId = player.id GROUP BY player.id ORDER BY wins DESC""")
+        cur.execute(
+            """SELECT player.id, player.name, count(wins) as wins, count(matches) as matches FROM player LEFT JOIN match wins on wins.winningPlayerId = player.id LEFT JOIN match matches on matches.playerOneId = player.id OR matches.playerTwoId = player.id GROUP BY player.id, player.name ORDER BY wins desc, player.id ASC""")
         return cur.fetchall()
     except:
         print "Failed to count players"
-	raise
+        raise
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -104,13 +105,15 @@ def reportMatch(winner, loser):
     cur = conn.cursor()
 
     try:
-        cur.execute("""INSERT INTO match (playerOneId, playerTwoId, winningPlayerId, match_state) VALUES (%s, %s, %s, 3)""", (winner, loser, winner,))
-	conn.commit()
+        cur.execute(
+            """INSERT INTO match (playerOneId, playerTwoId, winningPlayerId, match_state) VALUES (%s, %s, %s, 3)""",
+            (winner, loser, winner,))
+        conn.commit()
     except:
         print "Failed to register player"
-	raise
+        raise
 
- 
+
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
   
