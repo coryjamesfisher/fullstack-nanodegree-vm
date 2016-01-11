@@ -144,6 +144,57 @@ def test_pairings():
                 "After one match, players with one win should be paired.")
     print "8. After one match, players with one win are paired."
 
+def test_win_and_match_counts():
+    """
+    This method will test a tournament with a larger
+    number of players to make sure standings report
+    the proper amount of win/loss totals for all players
+    combined.
+    """
+
+    delete_matches()
+    delete_players()
+    register_player('Player One')
+    register_player('Player Two')
+    register_player('Player Three')
+    register_player('Player Four')
+    register_player('Player Five')
+    register_player('Player Six')
+    register_player('Player Seven')
+    register_player('Player Eight')
+
+    for r in range(4):
+        pairings = swiss_pairings()
+        i = 1
+        for match in pairings:
+
+            i += 1
+            if i % 2 == 0:
+                report_match(match[0], match[2])
+            else:
+                report_match(match[2], match[0])
+
+    standings = player_standings()
+
+    num_matches_doubled = 0
+    num_wins = 0
+    for player in standings:
+
+        num_wins += player[2]
+        num_matches_doubled += player[3]
+
+    if num_matches_doubled / 2 != 16:
+        raise ValueError(
+            "Number of matches should be 16 for 8 players on 4 rounds"
+        )
+
+    if num_wins != 16:
+        raise ValueError(
+            "Number of wins should be 16 for 8 players on 4 rounds"
+        )
+    print "9. After 8 players go 4 rounnds there are " \
+          "16 games played with 16 winners yielded"
+
 
 if __name__ == '__main__':
     test_delete_matches()
@@ -154,4 +205,6 @@ if __name__ == '__main__':
     test_standings_before_matches()
     test_report_matches()
     test_pairings()
+    test_win_and_match_counts()
+
     print "Success!  All tests pass!"

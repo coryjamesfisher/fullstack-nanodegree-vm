@@ -83,10 +83,9 @@ def player_standings():
     try:
         cur.execute(
             'SELECT player.id, player.name, '
-            'count(wins) as wins, '
+            'SUM(CASE WHEN matches.winningPlayerId = player.id THEN 1 ELSE 0 END) as wins, '
             'count(matches) as matches '
             'FROM player '
-            'LEFT JOIN match wins on wins.winningPlayerId = player.id '
             'LEFT JOIN match matches on matches.playerOneId = player.id '
             'OR matches.playerTwoId = player.id '
             'GROUP BY player.id, player.name ORDER BY wins desc, player.id ASC')
@@ -134,13 +133,20 @@ def swiss_pairings():
     """
     standings = player_standings()
     matches = list()
-    count_matches = len(standings)/2
 
-    for i in xrange(0, count_matches + 1, 2):
-        j = i + 1
-        match = (
-            standings[i][0], standings[i][1],
-            standings[j][0], standings[j][1])
-        matches.append(match)
+    for player_one_index in range(len(standings)):
+
+        # If this player makes the pair
+        if (player_one_index + 1) % 2 == 0:
+
+            # Get the previous player
+            player_two_index = player_one_index - 1
+
+            # Add a match with current and previous player
+            match = (
+                standings[player_one_index][0], standings[player_one_index][1],
+                standings[player_two_index][0], standings[player_two_index][1]
+            )
+            matches.append(match)
 
     return matches
